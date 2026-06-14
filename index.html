@@ -30,72 +30,78 @@
     overflow-x: hidden;
   }
 
-  /* ENVELOPE */
+  /* SPLASH / INTRO */
   #envelope-screen {
     position: fixed; inset: 0;
     background: var(--warm-white);
-    display: flex; flex-direction: column;
-    align-items: center; justify-content: center;
-    z-index: 100;
-    transition: opacity 0.8s ease, transform 0.8s ease;
-  }
-  #envelope-screen.open { opacity: 0; transform: scale(1.05); pointer-events: none; }
-
-  .envelope-wrap { display: flex; flex-direction: column; align-items: center; gap: 28px; }
-
-  .envelope {
-    width: 280px; height: 190px; position: relative;
-    cursor: pointer;
-    filter: drop-shadow(0 12px 40px rgba(60,64,40,0.3));
-    transition: transform 0.3s ease;
-  }
-  .envelope:hover { transform: translateY(-6px) scale(1.02); }
-  .envelope svg { width: 100%; height: 100%; }
-
-  .seal {
-    position: absolute; top: 50%; left: 50%;
-    transform: translate(-50%, -50%);
-    width: 52px; height: 52px;
-    background: radial-gradient(circle, var(--olive-light) 0%, var(--olive-dark) 100%);
-    border-radius: 50%;
     display: flex; align-items: center; justify-content: center;
+    z-index: 100; cursor: pointer; overflow: hidden;
+    transition: opacity 0.9s ease, transform 0.9s ease;
+  }
+  #envelope-screen.open { opacity: 0; transform: scale(1.04); pointer-events: none; }
+
+  .intro-petals { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
+  .petal {
+    position: absolute;
+    border-radius: 47% 53% 68% 32% / 32% 42% 58% 68%;
+    will-change: transform;
+    animation-name: petal-float;
+    animation-timing-function: ease-in-out;
+    animation-iteration-count: infinite;
+  }
+  @keyframes petal-float {
+    0%,100% { transform: translateY(0) rotate(0deg); }
+    50%     { transform: translateY(14px) rotate(16deg); }
+  }
+
+  .intro-inner {
+    position: relative; z-index: 2; text-align: center; padding: 0 24px;
+    opacity: 0; transform: translateY(16px);
+    animation: introUp 1.3s ease forwards 0.25s;
+  }
+  @keyframes introUp { to { opacity: 1; transform: translateY(0); } }
+
+  .intro-eyebrow {
     font-family: 'Cinzel', Georgia, serif;
-    color: white; font-size: 13px; letter-spacing: 2px;
-    box-shadow: 0 4px 16px rgba(60,64,40,0.5); z-index: 2;
-    animation: pulse-seal 2.5s ease-in-out infinite;
+    font-size: 12px; letter-spacing: 5px; text-transform: uppercase;
+    color: var(--text-light); margin-bottom: 22px; display: block;
   }
-  @keyframes pulse-seal {
-    0%,100% { box-shadow: 0 4px 16px rgba(60,64,40,0.5); }
-    50% { box-shadow: 0 4px 28px rgba(60,64,40,0.85); }
-  }
-
-  .envelope-text { text-align: center; }
-  .envelope-text p {
-    font-family: 'Cinzel', Georgia, serif; font-size: 11px;
-    letter-spacing: 3px; text-transform: uppercase; color: var(--text-light); margin-bottom: 6px;
-  }
-  .envelope-text h2 {
+  .intro-names {
     font-family: 'Cormorant Garamond', Georgia, serif;
-    font-size: 28px; font-weight: 400; font-style: italic; color: var(--olive-dark);
+    font-style: italic; font-weight: 500; line-height: 1.0;
+    font-size: clamp(46px, 13vw, 88px);
+    color: var(--olive-dark); letter-spacing: -0.5px;
   }
+  .intro-names .amp {
+    display: block; font-size: 0.62em; color: var(--olive);
+    line-height: 1.15; margin: 2px 0; font-weight: 400;
+  }
+  .intro-date {
+    font-family: 'Cinzel', Georgia, serif;
+    font-size: 14px; letter-spacing: 5px; color: var(--olive-light);
+    margin-top: 24px;
+  }
+  .intro-line { width: 88px; height: 1px; background: var(--olive-light); opacity: 0.55; margin: 22px auto 0; }
 
-  .open-btn {
-    background: var(--olive-dark); border: none; color: white;
-    font-family: 'Cinzel', Georgia, serif; font-size: 11px;
-    letter-spacing: 3px; text-transform: uppercase; padding: 14px 36px;
-    cursor: pointer; transition: all 0.3s ease;
-    box-shadow: 0 4px 16px rgba(60,64,40,0.3);
+  .intro-tap {
+    position: absolute; bottom: 40px; left: 0; right: 0; z-index: 2;
+    text-align: center;
+    font-family: 'Cinzel', Georgia, serif;
+    font-size: 11px; letter-spacing: 4px; text-transform: uppercase;
+    color: var(--text-light);
+    animation: tapPulse 2.4s ease-in-out infinite;
   }
-  .open-btn:hover { background: var(--text); transform: translateY(-2px); }
+  @keyframes tapPulse { 0%,100% { opacity: 0.45; } 50% { opacity: 0.95; } }
 
   /* MAIN */
-  #invite { display: none; min-height: 100vh; min-height: 100dvh; }
+  #invite { display: none; min-height: 100vh; min-height: 100dvh; min-height: var(--app-height, 100dvh); }
   #invite.visible { display: block; }
 
   /* HERO */
   .hero {
     min-height: 100vh;
     min-height: 100dvh;
+    min-height: var(--app-height, 100dvh);
     display: flex; flex-direction: column;
     align-items: center; justify-content: center;
     position: relative; padding: 60px 24px;
@@ -418,25 +424,20 @@
 </head>
 <body>
 
-<!-- ENVELOPE -->
-<div id="envelope-screen">
-  <div class="envelope-wrap">
-    <div class="envelope-text">
-      <p>Um convite especial para</p>
-      <h2>você</h2>
+<!-- SPLASH -->
+<div id="envelope-screen" onclick="openInvite()">
+  <div class="intro-petals" id="intro-petals" aria-hidden="true"></div>
+  <div class="intro-inner">
+    <span class="intro-eyebrow">Um convite especial</span>
+    <div class="intro-names">
+      Thamyres
+      <span class="amp">&amp;</span>
+      Ivanilson
     </div>
-    <div class="envelope" onclick="openInvite()">
-      <svg viewBox="0 0 280 190" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <rect x="2" y="2" width="276" height="186" rx="3" fill="white" stroke="#9aa079" stroke-width="1.5"/>
-        <path d="M2 2 L140 100 L278 2" stroke="#9aa079" stroke-width="1.5" fill="none"/>
-        <path d="M2 188 L100 110" stroke="#9aa079" stroke-width="1"/>
-        <path d="M278 188 L180 110" stroke="#9aa079" stroke-width="1"/>
-        <rect x="10" y="10" width="260" height="170" rx="2" fill="none" stroke="#cdc7b0" stroke-width="0.5" stroke-dasharray="4 4"/>
-      </svg>
-      <div class="seal">T&amp;I</div>
-    </div>
-    <button class="open-btn" onclick="openInvite()">&#10022; Abrir Convite &#10022;</button>
+    <div class="intro-date">12 &middot; 10 &middot; 2026</div>
+    <div class="intro-line"></div>
   </div>
+  <div class="intro-tap">Toque para abrir</div>
 </div>
 
 <!-- INVITE -->
@@ -651,8 +652,39 @@
 <script>
   var music = document.getElementById('bg-music');
 
+  function buildPetals() {
+    var wrap = document.getElementById('intro-petals');
+    if (!wrap) return;
+    var colors = ['#9aa079','#a89684','#cdb9a8','#b8a98f','#8f9468'];
+    for (var i = 0; i < 20; i++) {
+      var s = 6 + Math.random() * 10;
+      var p = document.createElement('div');
+      p.className = 'petal';
+      p.style.width = s + 'px';
+      p.style.height = (s * 0.78) + 'px';
+      p.style.left = (Math.random() * 100) + '%';
+      p.style.top = (Math.random() * 100) + '%';
+      p.style.background = colors[Math.floor(Math.random() * colors.length)];
+      p.style.opacity = (0.28 + Math.random() * 0.3).toFixed(2);
+      p.style.transform = 'rotate(' + (Math.random() * 360) + 'deg)';
+      p.style.animationDuration = (4 + Math.random() * 5).toFixed(1) + 's';
+      p.style.animationDelay = (-Math.random() * 5).toFixed(1) + 's';
+      wrap.appendChild(p);
+    }
+  }
+  buildPetals();
+
+  function setAppHeight() {
+    document.documentElement.style.setProperty('--app-height', window.innerHeight + 'px');
+  }
+  window.addEventListener('resize', setAppHeight);
+  window.addEventListener('orientationchange', setAppHeight);
+  setAppHeight();
+
+
   function openInvite() {
     document.getElementById('envelope-screen').classList.add('open');
+    window.scrollTo(0, 0);
     // toque do usuário -> libera áudio no iOS
     try {
       music.play().then(function(){ setPlaying(true); }).catch(function(){ setPlaying(false); });
@@ -708,4 +740,3 @@
 </script>
 </body>
 </html>
-
